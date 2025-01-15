@@ -12,3 +12,4 @@ E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\refint\FactoryApplicat
 E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\FactoryApplication.pdb
 E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\FactoryApplication.genruntimeconfig.cache
 E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\ref\FactoryApplication.dll
+E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\FactoryApplication.sourcelink.json

@@ -4,13 +4,13 @@ using FactoryApplication.Products.Products;
 
 namespace FactoryApplication.Factories.Factories;
 
-public class FactoryClass(string nameFactory, double productionCoefficient) : AbstractFactory(nameFactory, productionCoefficient)
+public class Factory(string nameFactory, double productionCoefficient) : AbstractFactory(nameFactory, productionCoefficient)
 {
   public delegate void ProcessOfTransferringProductsToWarehouse(List<AbstractProduct> products);
   public event ProcessOfTransferringProductsToWarehouse? GiveNoticeOfManufacture;
   
   protected override AbstractProduct CreateProduct(string name, string weidth, string typeOfPackaging) 
-    => new ProductClass(name, weidth, typeOfPackaging, NameFactory);
+    => new Product(name, weidth, typeOfPackaging, NameFactory);
 
   public void StartFactory()
   {
