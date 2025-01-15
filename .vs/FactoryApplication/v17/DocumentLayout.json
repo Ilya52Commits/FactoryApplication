@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\FactoryApplication\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E1193828-7277-41A2-84B7-EB063DAC4119}|FactoryApplication\\FactoryApplication.csproj|e:\\factoryapplication\\factoryapplication\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E1193828-7277-41A2-84B7-EB063DAC4119}|FactoryApplication\\FactoryApplication.csproj|solutionrelative:factoryapplication\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\FactoryApplication\\FactoryApplication\\Program.cs",
+              "RelativeDocumentMoniker": "FactoryApplication\\Program.cs",
+              "ToolTip": "E:\\FactoryApplication\\FactoryApplication\\Program.cs",
+              "RelativeToolTip": "FactoryApplication\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-14T13:11:13.936Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

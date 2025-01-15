@@ -1,0 +1,14 @@
+E:\FactoryApplication\FactoryApplication\bin\Debug\net8.0\FactoryApplication.exe
+E:\FactoryApplication\FactoryApplication\bin\Debug\net8.0\FactoryApplication.deps.json
+E:\FactoryApplication\FactoryApplication\bin\Debug\net8.0\FactoryApplication.runtimeconfig.json
+E:\FactoryApplication\FactoryApplication\bin\Debug\net8.0\FactoryApplication.dll
+E:\FactoryApplication\FactoryApplication\bin\Debug\net8.0\FactoryApplication.pdb
+E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\FactoryApplication.GeneratedMSBuildEditorConfig.editorconfig
+E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\FactoryApplication.AssemblyInfoInputs.cache
+E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\FactoryApplication.AssemblyInfo.cs
+E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\FactoryApplication.csproj.CoreCompileInputs.cache
+E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\FactoryApplication.dll
+E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\refint\FactoryApplication.dll
+E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\FactoryApplication.pdb
+E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\FactoryApplication.genruntimeconfig.cache
+E:\FactoryApplication\FactoryApplication\obj\Debug\net8.0\ref\FactoryApplication.dll
