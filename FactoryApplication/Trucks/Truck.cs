@@ -18,9 +18,38 @@ public class Truck(string name, int capacity)
       List<AbstractProduct> unloadedProduct = new(Capacity);
       unloadedProduct.AddRange(products);
       
-      Console.WriteLine($"Выгрузка продуктов в грузовик {Name}");
+      // Подсчет статистики
+      var productStatistics = new Dictionary<string, int>();
+
+      foreach (var product in unloadedProduct)
+      {
+        /////
+        try
+        {
+          if (productStatistics.ContainsKey(product.Name))
+          {
+            productStatistics[product.Name]++;
+          }
+          else
+          {
+            productStatistics[product.Name] = 1;
+          }
+        }
+        catch
+        {
+          // ignored
+        }
+        ////
+      }
+      
       unloadedProduct.Clear();
-      Console.WriteLine($"Груз доставлен грузовиком {Name}");
+      
+      Console.WriteLine();
+      // Вывод статистики
+      Console.WriteLine($"Статистика выгрузки для грузовика {Name}:");
+      foreach (var stat in productStatistics)
+        Console.WriteLine($"Продукт: {stat.Key}, Количество: {stat.Value}");
+      Console.WriteLine();
       
       lock (_lock)
       {

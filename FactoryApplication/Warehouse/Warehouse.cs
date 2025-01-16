@@ -15,10 +15,12 @@ public class Warehouse(int capacityMultiplier)
   
   public void RetrieveProducts(List<AbstractProduct> products)
   {
-    foreach (var product in products)
-    {
-      _products.Add(product);
-    }
+    Console.WriteLine($"Поступление на склад продукта:\n" +
+                      $"название - {products[0].Name};\n" +
+                      $"фабрика - {products[0].NameFactory};\n" +
+                      $"количество - {products.Count};\n");
+    
+    _products.AddRange(products);
 
     CurrentLoad = _products.Count;
 
@@ -33,7 +35,8 @@ public class Warehouse(int capacityMultiplier)
     // добавление данных в словарь
     _unloadedProducts.TryAdd(randomIndexDictionary, returnedProducts);
     // освобождение коллекции склада от возвращаемых продуктов
-    _products.RemoveRange(0, returnedProducts.Count);
+    if (returnedProducts.Count != 0)
+      _products.RemoveRange(0, returnedProducts.Count);
       
     // вызов метода для повторной разгрузки
     UnloadingOfReturnedProducts(); 

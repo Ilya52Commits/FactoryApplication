@@ -2,9 +2,9 @@
 using FactoryApplication.Trucks;
 using FactoryApplication.Warehouse;
 
-var fabricA = new Factory("Фабрика А", 1);
-var fabricB = new Factory("Фабрика Б", 1.1);
-var fabricC = new Factory("Фабрика C", 1.2);
+var fabricA = new Factory("Фабрика А", "a", 1);
+var fabricB = new Factory("Фабрика Б", "b", 1.1);
+var fabricC = new Factory("Фабрика C", "c", 1.2);
 
 var warehouse = new Warehouse(10);
 

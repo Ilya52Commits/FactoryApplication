@@ -4,7 +4,7 @@ using FactoryApplication.Products.Products;
 
 namespace FactoryApplication.Factories.Factories;
 
-public class Factory(string nameFactory, double productionCoefficient) : AbstractFactory(nameFactory, productionCoefficient)
+public class Factory(string nameFactory, string manufacturedProduct, double productionCoefficient) : AbstractFactory(nameFactory, manufacturedProduct, productionCoefficient)
 {
   public delegate void ProcessOfTransferringProductsToWarehouse(List<AbstractProduct> products);
   public event ProcessOfTransferringProductsToWarehouse? GiveNoticeOfManufacture;
@@ -34,16 +34,12 @@ public class Factory(string nameFactory, double productionCoefficient) : Abstrac
     // Создаем объект для хранения результатов
     List<AbstractProduct> products = [];
 
-    for (var i = 0; i < N * productionCoefficient; i++)
-    {
-      Console.WriteLine($"Изготовление продуктов в час фабрики {nameFactory}");
-      
+    for (var i = 0; i < N * ProductionCoefficient; i++)
       products.Add(CreateProduct(
-        $"Продукт фабрики {nameFactory}", 
-        $"Вес продукта фабрики {nameFactory}", 
-        $"Тип продукта фабрики {nameFactory}"));
-    }
-  
+        ManufacturedProduct, 
+        "123", 
+        NameFactory));
+    
     // Возвращаем созданные продукты
     return products;
   }
