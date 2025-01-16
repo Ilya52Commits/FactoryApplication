@@ -2,18 +2,12 @@ using FactoryApplication.Products.Abstract_products;
 
 namespace FactoryApplication.Trucks;
 
-public class Truck
+public class Truck(string name, int capacity)
 {
-  private string Name { get; }
-  public  int Capacity { get; set; }
-  public TruckStatus Status { get; set; }
+  private string Name { get; } = name;
+  public  int Capacity { get; } = capacity;
+  public TruckStatus Status { get; private set; } = TruckStatus.Free;
   private readonly object _lock = new();
-  public Truck(string name, int capacity)
-  {
-    Name = name;
-    Capacity = capacity;
-    Status = TruckStatus.Free;
-  }
 
   public void WarehouseUnloading(List<AbstractProduct> products)
   {
@@ -25,7 +19,6 @@ public class Truck
       unloadedProduct.AddRange(products);
       
       Console.WriteLine($"Выгрузка продуктов в грузовик {Name}");
-      Thread.Sleep(2000);
       unloadedProduct.Clear();
       Console.WriteLine($"Груз доставлен грузовиком {Name}");
       
@@ -44,5 +37,3 @@ public enum TruckStatus
   OnTheRoad, 
   Free
 }
-
-// создать класс truckManager, который будет регулировать грузовики

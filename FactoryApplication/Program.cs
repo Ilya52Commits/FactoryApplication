@@ -8,7 +8,6 @@ var fabricC = new Factory("Фабрика C", 1.2);
 
 var warehouse = new Warehouse(10);
 
-
 var truckFirst = new Truck("Truck First", 6);
 var truckSecond = new Truck("Truck Second", 4);
 

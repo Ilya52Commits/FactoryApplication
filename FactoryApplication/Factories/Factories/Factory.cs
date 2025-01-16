@@ -20,7 +20,7 @@ public class Factory(string nameFactory, double productionCoefficient) : Abstrac
       {
         // Имитация времени изготовления
         Thread.Sleep(Time * 1000);
-        var resultManufacture = CreateProductInThread();
+        var resultManufacture = CreatingProductSetPerHour();
         
         GiveNoticeOfManufacture?.Invoke(resultManufacture);
       }
@@ -29,7 +29,7 @@ public class Factory(string nameFactory, double productionCoefficient) : Abstrac
     threadProcessFactory.Start();
   }
 
-  private List<AbstractProduct> CreateProductInThread()
+  private List<AbstractProduct> CreatingProductSetPerHour()
   {
     // Создаем объект для хранения результатов
     List<AbstractProduct> products = [];
@@ -37,12 +37,11 @@ public class Factory(string nameFactory, double productionCoefficient) : Abstrac
     for (var i = 0; i < N * productionCoefficient; i++)
     {
       Console.WriteLine($"Изготовление продуктов в час фабрики {nameFactory}");
-
-      var name = $"Продукт фабрики {nameFactory}";
-      var weidth = $"Вес продукта фабрики {nameFactory}";
-      var typeOfPackaging = $"Тип продукта фабрики {nameFactory}";
-
-      products.Add(CreateProduct(name, weidth, typeOfPackaging));
+      
+      products.Add(CreateProduct(
+        $"Продукт фабрики {nameFactory}", 
+        $"Вес продукта фабрики {nameFactory}", 
+        $"Тип продукта фабрики {nameFactory}"));
     }
   
     // Возвращаем созданные продукты

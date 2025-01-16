@@ -4,7 +4,7 @@ namespace FactoryApplication.Trucks;
 
 public class TruckManager(List<Truck> trucks)
 {
-  private List<Truck> Trucks { get; set; } = trucks;
+  private List<Truck> Trucks { get; } = trucks;
 
   public List<AbstractProduct> StartTruckManager(List<AbstractProduct> products)
   {
