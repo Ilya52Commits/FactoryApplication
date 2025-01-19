@@ -19,7 +19,7 @@ public class Factory(string nameFactory, string manufacturedProduct, double prod
       while (true)
       {
         // Имитация времени изготовления
-        Thread.Sleep(Time * 1000);
+        Thread.Sleep(ProductionTime * 1000);
         var resultManufacture = CreatingProductSetPerHour();
         
         GiveNoticeOfManufacture?.Invoke(resultManufacture);
@@ -34,7 +34,7 @@ public class Factory(string nameFactory, string manufacturedProduct, double prod
     // Создаем объект для хранения результатов
     List<AbstractProduct> products = [];
 
-    for (var i = 0; i < N * ProductionCoefficient; i++)
+    for (var i = 0; i < SumOfProductsProducedOverTime; i++)
       products.Add(CreateProduct(
         ManufacturedProduct, 
         "123", 

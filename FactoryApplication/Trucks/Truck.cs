@@ -23,30 +23,23 @@ public class Truck(string name, int capacity)
 
       foreach (var product in unloadedProduct)
       {
-        /////
-        try
+        if (productStatistics.ContainsKey(product.Name))
         {
-          if (productStatistics.ContainsKey(product.Name))
-          {
-            productStatistics[product.Name]++;
-          }
-          else
-          {
-            productStatistics[product.Name] = 1;
-          }
+          productStatistics[product.Name]++;
         }
-        catch
+        else
         {
-          // ignored
+          productStatistics[product.Name] = 1;
         }
-        ////
       }
+      
       
       unloadedProduct.Clear();
       
       Console.WriteLine();
       // Вывод статистики
       Console.WriteLine($"Статистика выгрузки для грузовика {Name}:");
+      Console.WriteLine($"Всего продуктов {productStatistics.Count}");
       foreach (var stat in productStatistics)
         Console.WriteLine($"Продукт: {stat.Key}, Количество: {stat.Value}");
       Console.WriteLine();

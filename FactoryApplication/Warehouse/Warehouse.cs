@@ -3,60 +3,68 @@ using FactoryApplication.Products.Abstract_products;
 
 namespace FactoryApplication.Warehouse;
 
-public class Warehouse(int capacityMultiplier)
+public class Warehouse(double sumOfProductsOfFactories)
 {
   public delegate List<AbstractProduct> ProcessOfTransferringProductsFromWarehouseToTruck(List<AbstractProduct> products);
   public event ProcessOfTransferringProductsFromWarehouseToTruck? WarehouseOverflowNotification;
 
   private readonly List<AbstractProduct> _products = [];
-  private readonly ConcurrentDictionary<int, List<AbstractProduct>> _unloadedProducts = new(); // словарь для сохранения не разгруженных продуктов
-  private int CapacityMultiplier { get; } = capacityMultiplier;
+  private readonly ConcurrentQueue<AbstractProduct> _unloadedProducts = new();
+  private const int M = 100;
+  public double WarehouseSize { get; } = M * sumOfProductsOfFactories;
   private int CurrentLoad { get; set; }
+  
+  private readonly object _lockObject = new();
   
   public void RetrieveProducts(List<AbstractProduct> products)
   {
-    Console.WriteLine($"Поступление на склад продукта:\n" +
-                      $"название - {products[0].Name};\n" +
-                      $"фабрика - {products[0].NameFactory};\n" +
-                      $"количество - {products.Count};\n");
-    
-    _products.AddRange(products);
-
-    CurrentLoad = _products.Count;
-
-    if (!(CurrentLoad >= CapacityMultiplier * 0.95)) return;
-
-    var returnedProducts = WarehouseOverflowNotification?.Invoke(_products);
-
-    if (returnedProducts == null) return;
-    // если возвращаемая коллекция не null
-    var rnd = new Random();
-    var randomIndexDictionary = rnd.Next(1, 101); // Случайное число от 1 до 100
-    // добавление данных в словарь
-    _unloadedProducts.TryAdd(randomIndexDictionary, returnedProducts);
-    // освобождение коллекции склада от возвращаемых продуктов
-    if (returnedProducts.Count != 0)
-      _products.RemoveRange(0, returnedProducts.Count);
+    lock (_lockObject)
+    {
+      Console.WriteLine($"Поступление на склад продукта:\n" +
+                        $"название - {products[0].Name};\n" +
+                        $"фабрика - {products[0].NameFactory};\n" +
+                        $"количество - {products.Count};\n");
       
-    // вызов метода для повторной разгрузки
-    UnloadingOfReturnedProducts(); 
+      _products.AddRange(products);
+
+      CurrentLoad = _products.Count;
+
+      if (!(CurrentLoad >= WarehouseSize * 0.95)) return;
+
+      var returnedProducts = WarehouseOverflowNotification?.Invoke(_products);
+
+      if (returnedProducts == null) return;
+      // если возвращаемая коллекция не null
+      foreach (var product in returnedProducts)
+      {
+        _unloadedProducts.Enqueue(product);
+      }
+      // освобождение коллекции склада от возвращаемых продуктов
+      if (returnedProducts.Count != 0)
+        _products.RemoveRange(0, returnedProducts.Count);
+        
+      // вызов метода для повторной разгрузки
+      UnloadingOfReturnedProducts(); 
+    }
   }
 
   private void UnloadingOfReturnedProducts()
   {
     var unloadingThread = new Thread(() =>
     {
-      // пока словарь не пустой
+      // пока очередь не пуста
       while (!_unloadedProducts.IsEmpty)
-        // проход по словарю
-        foreach (var product in _unloadedProducts)
-        {
-          // вызов события грузовика
-          var returnedProducts = WarehouseOverflowNotification?.Invoke(product.Value);
-          // если набор возвращаемых элементов null, то коллекция удаляется
-          if (returnedProducts == null)
-            _unloadedProducts.TryRemove(product);
-        }
+      {
+        var returnedProducts = WarehouseOverflowNotification?.Invoke(_unloadedProducts.ToList());
+        
+        _unloadedProducts.Clear();
+        
+        if (returnedProducts == null) 
+          return;
+        
+        foreach (var product in returnedProducts)
+          _unloadedProducts.Enqueue(product);
+      }
     });
     
     unloadingThread.Start();
