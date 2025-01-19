@@ -4,43 +4,45 @@ using FactoryApplication.Products.Products;
 
 namespace FactoryApplication.Factories.Factories;
 
-public class Factory(string nameFactory, string manufacturedProduct, double productionCoefficient) : AbstractFactory(nameFactory, manufacturedProduct, productionCoefficient)
+public class Factory(string nameFactory, string manufacturedProduct, double productionCoefficient):AbstractFactory(nameFactory, manufacturedProduct, productionCoefficient)
 {
-  public delegate void ProcessOfTransferringProductsToWarehouse(List<AbstractProduct> products);
-  public event ProcessOfTransferringProductsToWarehouse? GiveNoticeOfManufacture;
-  
-  protected override AbstractProduct CreateProduct(string name, string weidth, string typeOfPackaging) 
-    => new Product(name, weidth, typeOfPackaging, NameFactory);
+    public delegate void ProcessOfTransferringProductsToWarehouse(List<AbstractProduct> products);
 
-  public void StartFactory()
-  {
-    var threadProcessFactory = new Thread(() =>
+    public event ProcessOfTransferringProductsToWarehouse? GiveNoticeOfManufacture;
+
+    protected override AbstractProduct CreateProduct(string name, string weidth, string typeOfPackaging) => new Product(name, weidth, typeOfPackaging, NameFactory);
+
+    public void StartFactory()
     {
-      while (true)
-      {
-        // Имитация времени изготовления
-        Thread.Sleep(ProductionTime * 1000);
-        var resultManufacture = CreatingProductSetPerHour();
-        
-        GiveNoticeOfManufacture?.Invoke(resultManufacture);
-      }
-    });
-    
-    threadProcessFactory.Start();
-  }
+        var threadProcessFactory = new Thread(() =>
+        {
+            while (true)
+            {
+                // Имитация времени изготовления
+                Thread.Sleep(ProductionTime * 1000);
+                var resultManufacture = CreatingProductSetPerHour();
 
-  private List<AbstractProduct> CreatingProductSetPerHour()
-  {
-    // Создаем объект для хранения результатов
-    List<AbstractProduct> products = [];
+                GiveNoticeOfManufacture?.Invoke(resultManufacture);
+            }
+        });
 
-    for (var i = 0; i < SumOfProductsProducedOverTime; i++)
-      products.Add(CreateProduct(
-        ManufacturedProduct, 
-        "123", 
-        NameFactory));
-    
-    // Возвращаем созданные продукты
-    return products;
-  }
+        threadProcessFactory.Start();
+    }
+
+    private List<AbstractProduct> CreatingProductSetPerHour()
+    {
+        // Создаем объект для хранения результатов
+        List<AbstractProduct> products = [];
+
+        for (var i = 0; i < SumOfProductsProducedOverTime; i++)
+        {
+            products.Add(CreateProduct(
+                                       ManufacturedProduct,
+                                       "123",
+                                       NameFactory));
+        }
+
+        // Возвращаем созданные продукты
+        return products;
+    }
 }

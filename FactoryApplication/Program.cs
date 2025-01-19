@@ -12,8 +12,8 @@ var warehouse = new Warehouse(sumOfFactories);
 
 // Рассчитываем 60% и 40% от CapacityMultiplier
 var warehouseSize = warehouse.WarehouseSize;
-var capacityForTruckFirst = (int)(warehouseSize * 0.6);
-var capacityForTruckSecond = (int)(warehouseSize * 0.4);
+var capacityForTruckFirst = (int) (warehouseSize * 0.6);
+var capacityForTruckSecond = (int) (warehouseSize * 0.4);
 
 // Создаем грузовики с рассчитанными емкостями
 var truckFirst = new Truck("Truck First", capacityForTruckFirst);

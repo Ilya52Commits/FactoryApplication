@@ -5,68 +5,73 @@ namespace FactoryApplication.Warehouse;
 
 public class Warehouse(double sumOfProductsOfFactories)
 {
-  public delegate List<AbstractProduct> ProcessOfTransferringProductsFromWarehouseToTruck(List<AbstractProduct> products);
-  public event ProcessOfTransferringProductsFromWarehouseToTruck? WarehouseOverflowNotification;
+    public delegate List<AbstractProduct> ProcessOfTransferringProductsFromWarehouseToTruck(List<AbstractProduct> products);
 
-  private readonly List<AbstractProduct> _products = [];
-  private readonly ConcurrentQueue<AbstractProduct> _unloadedProducts = new();
-  private const int M = 100;
-  public double WarehouseSize { get; } = M * sumOfProductsOfFactories;
-  private int CurrentLoad { get; set; }
-  
-  private readonly object _lockObject = new();
-  
-  public void RetrieveProducts(List<AbstractProduct> products)
-  {
-    lock (_lockObject)
+    private const int M = 100;
+
+    private readonly object _lockObject = new();
+
+    private readonly List<AbstractProduct> _products = [];
+    private readonly ConcurrentQueue<AbstractProduct> _unloadedProducts = new();
+    public double WarehouseSize { get; } = M * sumOfProductsOfFactories;
+    private int _currentLoad { get; set; }
+    public event ProcessOfTransferringProductsFromWarehouseToTruck? WarehouseOverflowNotification;
+
+    public void RetrieveProducts(List<AbstractProduct> products)
     {
-      Console.WriteLine($"Поступление на склад продукта:\n" +
-                        $"название - {products[0].Name};\n" +
-                        $"фабрика - {products[0].NameFactory};\n" +
-                        $"количество - {products.Count};\n");
-      
-      _products.AddRange(products);
+        lock (_lockObject)
+        {
+            Console.WriteLine($"Поступление на склад продукта:\n" +
+                              $"название - {products[0].Name};\n" +
+                              $"фабрика - {products[0].NameFactory};\n" +
+                              $"количество - {products.Count};\n");
 
-      CurrentLoad = _products.Count;
+            _products.AddRange(products);
 
-      if (!(CurrentLoad >= WarehouseSize * 0.95)) return;
+            _currentLoad = _products.Count;
 
-      var returnedProducts = WarehouseOverflowNotification?.Invoke(_products);
+            if (!(_currentLoad >= WarehouseSize * 0.95)) return;
 
-      if (returnedProducts == null) return;
-      // если возвращаемая коллекция не null
-      foreach (var product in returnedProducts)
-      {
-        _unloadedProducts.Enqueue(product);
-      }
-      // освобождение коллекции склада от возвращаемых продуктов
-      if (returnedProducts.Count != 0)
-        _products.RemoveRange(0, returnedProducts.Count);
-        
-      // вызов метода для повторной разгрузки
-      UnloadingOfReturnedProducts(); 
+            var returnedProducts = WarehouseOverflowNotification?.Invoke(_products);
+
+            if (returnedProducts == null) return;
+
+            // если возвращаемая коллекция не null
+            foreach (var product in returnedProducts)
+            {
+                _unloadedProducts.Enqueue(product);
+            }
+
+            // освобождение коллекции склада от возвращаемых продуктов
+            if (returnedProducts.Count != 0)
+                _products.RemoveRange(0, returnedProducts.Count);
+
+            // вызов метода для повторной разгрузки
+            UnloadingOfReturnedProducts();
+        }
     }
-  }
 
-  private void UnloadingOfReturnedProducts()
-  {
-    var unloadingThread = new Thread(() =>
+    private void UnloadingOfReturnedProducts()
     {
-      // пока очередь не пуста
-      while (!_unloadedProducts.IsEmpty)
-      {
-        var returnedProducts = WarehouseOverflowNotification?.Invoke(_unloadedProducts.ToList());
-        
-        _unloadedProducts.Clear();
-        
-        if (returnedProducts == null) 
-          return;
-        
-        foreach (var product in returnedProducts)
-          _unloadedProducts.Enqueue(product);
-      }
-    });
-    
-    unloadingThread.Start();
-  }
+        var unloadingThread = new Thread(() =>
+        {
+            // пока очередь не пуста
+            while (!_unloadedProducts.IsEmpty)
+            {
+                var returnedProducts = WarehouseOverflowNotification?.Invoke(_unloadedProducts.ToList());
+
+                _unloadedProducts.Clear();
+
+                if (returnedProducts == null)
+                    return;
+
+                foreach (var product in returnedProducts)
+                {
+                    _unloadedProducts.Enqueue(product);
+                }
+            }
+        });
+
+        unloadingThread.Start();
+    }
 }
