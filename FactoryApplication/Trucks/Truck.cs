@@ -9,58 +9,62 @@ namespace FactoryApplication.Trucks;
 /// <param name="capacity"></param>
 public class Truck(string name, int capacity)
 {
-    #region Свойства
-    // объект-заглушка
-    private readonly object _lock = new();
-    private string Name { get; } = name;
-    public int Capacity { get; } = capacity;
-    // статус занятости грузовика
-    public TruckStatus Status { get; private set; } = TruckStatus.Free;
-    #endregion
-    
-    /// <summary>
-    /// Получение продуктов со склада
-    /// </summary>
-    /// <param name="products"></param>
-    public void WarehouseUnloading(List<AbstractProduct> products)
+  #region Свойства
+
+  // объект-заглушка
+  private readonly object _lock = new();
+  private string Name { get; } = name;
+
+  public int Capacity { get; } = capacity;
+
+  // статус занятости грузовика
+  public TruckStatus Status { get; private set; } = TruckStatus.Free;
+
+  #endregion
+
+  /// <summary>
+  /// Получение продуктов со склада
+  /// </summary>
+  /// <param name="products"></param>
+  public void WarehouseUnloading(List<AbstractProduct> products)
+  {
+    Status = TruckStatus.OnTheRoad;
+
+    var threadWarehouseUnloading = new Thread(() =>
     {
-        Status = TruckStatus.OnTheRoad;
+      List<AbstractProduct> unloadedProduct = new(Capacity);
+      unloadedProduct.AddRange(products);
 
-        var threadWarehouseUnloading = new Thread(() =>
-        {
-            List<AbstractProduct> unloadedProduct = new(Capacity);
-            unloadedProduct.AddRange(products);
+      // Подсчет статистики
+      var productStatistics = new Dictionary<string, int>();
 
-            // Подсчет статистики
-            var productStatistics = new Dictionary<string, int>();
-
-            foreach (var product in unloadedProduct)
-            {
-                if (productStatistics.ContainsKey(product.Name))
-                    productStatistics[product.Name]++;
-                else
-                    productStatistics[product.Name] = 1;
-            }
+      foreach (var product in unloadedProduct)
+        if (productStatistics.ContainsKey(product.Name))
+          productStatistics[product.Name]++;
+        else
+          productStatistics[product.Name] = 1;
 
 
-            unloadedProduct.Clear();
+      unloadedProduct.Clear();
 
-            Console.WriteLine();
-            // Вывод статистики
-            Console.WriteLine($"Статистика выгрузки для грузовика {Name}:");
-            Console.WriteLine($"Всего продуктов {productStatistics.Count}");
+      Console.WriteLine();
+      // Вывод статистики
+      Console.WriteLine($"Статистика выгрузки для грузовика {Name}:");
+      Console.WriteLine($"Всего продуктов {productStatistics.Count}");
 
-            foreach (var stat in productStatistics)
-                Console.WriteLine($"Продукт: {stat.Key}, Количество: {stat.Value}");
+      foreach (var stat in productStatistics)
+        Console.WriteLine($"Продукт: {stat.Key}, Количество: {stat.Value}");
 
-            Console.WriteLine();
+      Console.WriteLine();
 
-            lock (_lock)
-                Status = TruckStatus.Free;
-        });
+      lock (_lock)
+      {
+        Status = TruckStatus.Free;
+      }
+    });
 
-        threadWarehouseUnloading.Start();
-    }
+    threadWarehouseUnloading.Start();
+  }
 }
 
 /// <summary>
@@ -68,6 +72,6 @@ public class Truck(string name, int capacity)
 /// </summary>
 public enum TruckStatus
 {
-    OnTheRoad,
-    Free
+  OnTheRoad,
+  Free
 }

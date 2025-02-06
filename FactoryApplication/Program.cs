@@ -7,7 +7,8 @@ var factoryA = new Factory("Фабрика А", "a", 1);
 var factoryB = new Factory("Фабрика B", "b", 1.1);
 var factoryC = new Factory("Фабрика C", "c", 1.2);
 
-var sumOfFactories = factoryA.SumOfProductsProducedOverTime + factoryB.SumOfProductsProducedOverTime + factoryC.SumOfProductsProducedOverTime;
+var sumOfFactories = factoryA.SumOfProductsProducedOverTime + factoryB.SumOfProductsProducedOverTime +
+                     factoryC.SumOfProductsProducedOverTime;
 
 // Создание склада
 var warehouse = new Warehouse(sumOfFactories);

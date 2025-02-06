@@ -9,88 +9,88 @@ namespace FactoryApplication.Warehouse;
 /// <param name="sumOfProductsOfFactories"></param>
 public class Warehouse(double sumOfProductsOfFactories)
 {
-    #region События
-    // Событие переполнения склада
-    public event ProcessOfTransferringProductsFromWarehouseToTruck? WarehouseOverflowNotification;
-    // Делегат для события
-    public delegate List<AbstractProduct> ProcessOfTransferringProductsFromWarehouseToTruck(List<AbstractProduct> products);
+  private const int M = 100;
+  private readonly object _lockObject = new();
+  private readonly List<AbstractProduct> _products = [];
+  private int _currentLoad { get; set; }
+  private readonly ConcurrentQueue<AbstractProduct> _unloadedProducts = new();
+  
+  /// <summary>
+  ///     Размер склада
+  /// </summary>
+  public double WarehouseSize { get; } = M * sumOfProductsOfFactories;
+  
+  /// <summary>
+  ///     Событие переполнения склада
+  /// </summary>
+  public event ProcessOfTransferringProductsFromWarehouseToTruck? WarehouseOverflowNotification;
 
-    private const int M = 100;
+  /// <summary>
+  ///     Делегат для события переполнения склада
+  /// </summary>
+  public delegate List<AbstractProduct> ProcessOfTransferringProductsFromWarehouseToTruck(
+    List<AbstractProduct> products);
 
-    private readonly object _lockObject = new();
+  #region Методы
 
-    // Главная коллекция склада
-    private readonly List<AbstractProduct> _products = [];
-    // Коллекция для не разгруженных продуктов
-    private readonly ConcurrentQueue<AbstractProduct> _unloadedProducts = new();
-    public double WarehouseSize { get; } = M * sumOfProductsOfFactories;
-    private int _currentLoad { get; set; }
-    #endregion
-    
-    #region Методы
-    /// <summary>
-    /// Метод добавления продуктов на склад
-    /// </summary>
-    /// <param name="products"></param>
-    public void RetrieveProducts(List<AbstractProduct> products)
+  /// <summary>
+  /// Метод добавления продуктов на склад
+  /// </summary>
+  /// <param name="products"></param>
+  public void RetrieveProducts(List<AbstractProduct> products)
+  {
+    lock (_lockObject)
     {
-        lock (_lockObject)
-        {
-            Console.WriteLine($"Поступление на склад продукта:\n" +
-                              $"название - {products[0].Name};\n" +
-                              $"фабрика - {products[0].NameFactory};\n" +
-                              $"количество - {products.Count};\n");
+      Console.WriteLine($"Поступление на склад продукта:\n" +
+                        $"название - {products[0].Name};\n" +
+                        $"фабрика - {products[0].NameFactory};\n" +
+                        $"количество - {products.Count};\n");
 
-            _products.AddRange(products);
+      _products.AddRange(products);
 
-            _currentLoad = _products.Count;
+      _currentLoad = _products.Count;
 
-            if (!(_currentLoad >= WarehouseSize * 0.95)) return;
+      if (!(_currentLoad >= WarehouseSize * 0.95)) return;
 
-            var returnedProducts = WarehouseOverflowNotification?.Invoke(_products);
+      var returnedProducts = WarehouseOverflowNotification?.Invoke(_products);
 
-            if (returnedProducts == null) return;
+      if (returnedProducts == null) return;
 
-            // если возвращаемая коллекция не null
-            foreach (var product in returnedProducts)
-            {
-                _unloadedProducts.Enqueue(product);
-            }
+      // если возвращаемая коллекция не null
+      foreach (var product in returnedProducts) _unloadedProducts.Enqueue(product);
 
-            // освобождение коллекции склада от возвращаемых продуктов
-            if (returnedProducts.Count != 0)
-                _products.RemoveRange(0, returnedProducts.Count);
+      // освобождение коллекции склада от возвращаемых продуктов
+      if (returnedProducts.Count != 0)
+        _products.RemoveRange(0, returnedProducts.Count);
 
-            // вызов метода для повторной разгрузки
-            UnloadingOfReturnedProducts();
-        }
+      // вызов метода для повторной разгрузки
+      UnloadingOfReturnedProducts();
     }
+  }
 
-    /// <summary>
-    /// Метод для передачи в грузовик возвращённых продуктов
-    /// </summary>
-    private void UnloadingOfReturnedProducts()
+  /// <summary>
+  /// Метод для передачи в грузовик возвращённых продуктов
+  /// </summary>
+  private void UnloadingOfReturnedProducts()
+  {
+    var unloadingThread = new Thread(() =>
     {
-        var unloadingThread = new Thread(() =>
-        {
-            // пока очередь не пуста
-            while (!_unloadedProducts.IsEmpty)
-            {
-                var returnedProducts = WarehouseOverflowNotification?.Invoke(_unloadedProducts.ToList());
+      // пока очередь не пуста
+      while (!_unloadedProducts.IsEmpty)
+      {
+        var returnedProducts = WarehouseOverflowNotification?.Invoke(_unloadedProducts.ToList());
 
-                _unloadedProducts.Clear();
+        _unloadedProducts.Clear();
 
-                if (returnedProducts == null)
-                    return;
+        if (returnedProducts == null)
+          return;
 
-                foreach (var product in returnedProducts)
-                {
-                    _unloadedProducts.Enqueue(product);
-                }
-            }
-        });
+        foreach (var product in returnedProducts) _unloadedProducts.Enqueue(product);
+      }
+    });
 
-        unloadingThread.Start();
-    }
-    #endregion
+    unloadingThread.Start();
+  }
+
+  #endregion
 }
